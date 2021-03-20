@@ -23,6 +23,7 @@ title (exe) Graphics System Calls
      cell_y dw 4
      cell_color db 1
      
+     seconds db 0  ;?¦¦ VARIABLE IN DATA SEGMENT.
 .code 
 
 
@@ -33,8 +34,22 @@ main proc far
     call set_graphic_mode 
     call color_cell
     call create_background
-   
+    mov bx, 0    
     
+for_temp:
+    mov cell_color,0
+    push bx  
+    call delay
+    call color_cell   
+    pop bx 
+    push bx
+    mov cell_x , bx 
+    mov cell_color,1 
+    call color_cell   
+    pop bx    
+    inc bx  
+    cmp bx,11
+    jnz for_temp
 
     mov ax, 4c00h ; exit to operating system.
     int 21h    
@@ -137,10 +152,11 @@ color_cell proc
     mov cx, 16
     mul cx      
     mov bx, start_row
-    add ax, bx
+    add ax, bx  
+    add ax, 1
     mov start_row_rec, ax
     
-    add ax, 16
+    add ax, 15
     mov finish_row_rec, ax
      
     mov ax, cell_y 
@@ -148,9 +164,10 @@ color_cell proc
     mul cx
     mov bx, start_col
     add ax, bx
+    add ax, 1
     mov start_col_rec, ax 
     
-    add ax, 16
+    add ax, 15
     mov finish_col_rec, ax   
 
     call draw_solid_rectangle   
@@ -213,11 +230,19 @@ loop4:
 endp shift_rectangle                                
 
 ;;;;;;;;;;;;;;;;; 
-delay proc
-    mov cx,4FFFH
-loop5:
-    loop loop5
-    ret         
-endp delay
 
+
+delay proc  
+delaying:   
+;GET SYSTEM TIME.
+  mov  ah, 2ch
+  int  21h      ;?¦¦ RETURN SECONDS IN DH.
+;CHECK IF ONE SECOND HAS PASSED. 
+  cmp  dh, seconds  ;?¦¦ IF SECONDS ARE THE SAME...
+  je   delaying     ;    ...WE ARE STILL IN THE SAME SECONDS.
+  mov  seconds, dh  ;?¦¦ SECONDS CHANGED. PRESERVE NEW SECONDS.
+  ret
+delay endp 
+;;;;;;;;;;;;;;;;;
+   
 end main
