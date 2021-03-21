@@ -1,0 +1,86 @@
+توابع :
+clear_screen 
+	description: صفحه را پاک می‌کند
+	input : 
+	output:  
+------------------------------------	
+create_background 
+	description: جدول اولیه را می‌سازد
+	input : 
+		start_col
+		start_row
+		finish_col
+		finish_row
+	output:
+------------------------------------	
+draw_vertical_line 
+	description: یک خط عمودی می‌کشد
+	input : 
+		start_row_line 
+		start_col_line
+		finish_row_line
+	output:
+------------------------------------	
+draw_horizontal_line 
+	description: یک خط افقی می‌کشد
+	input : 
+		start_row_line 
+		start_col_line
+		finish_col_line
+	output:
+------------------------------------	
+color_cell 
+	description: یک خانه از بازی را رنگ می‌کند
+	input : 
+		cell_x 
+		cell_y
+		cell_color
+	output:
+------------------------------------	
+draw_solid_rectangle 
+	description: یک مستطیل تو پر می‌کشد
+	input : 
+		start_row_rec 
+		start_col_rec
+		finish_col_rec
+		finish_row_rec
+		cell_color
+	output:
+------------------------------------	
+delay 
+	description: یک ثانیه دیلی می‌دهد
+	input : 
+	output:
+------------------------------------	
+find_cell_center 
+	description: پوزیشن مرکز کاشی داده شده را باز‌می‌گرداند
+	input : 
+		cell_x_index
+		cell_y_index
+	output:
+		cell_x_pos
+		cell_y_pos
+------------------------------------	
+move_down_cell 
+	description: یک کاشی را به سمت پایین می‌فرستد اگر این عملیات موفق نبود ۰ بر می‌گرداند
+	input : 
+		cell_x_down
+		cell_y_down
+	output:
+		is_down_empty
+------------------------------------	
+get_color_of_cell 
+	description: رنگ یک کاشی را باز‌میگرداند
+	input : 
+		cell_x_color_get
+		cell_y_color_get
+	output:
+		cell_color_get
+------------------------------------	
+check_cell_empty 
+	description: چک می کند آیا یک سلول خالی است یا خیر
+	input : 
+		check_cell_x
+		check_cell_y
+	output:
+		check_is_empty
