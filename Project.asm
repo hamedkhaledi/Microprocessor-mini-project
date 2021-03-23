@@ -28,9 +28,11 @@ title (exe) Graphics System Calls
      cell_x_pos dw 5
      cell_y_pos dw 4
      
-     is_down_empty db 0
      cell_x_down dw 0
      cell_y_down dw 0
+     
+     cell_x_right dw 0
+     cell_y_right dw 0
      
      cell_x_color_get dw 0 ; for get_color_of_cell (get color of specific cell)
      cell_y_color_get dw 0 
@@ -41,6 +43,20 @@ title (exe) Graphics System Calls
      check_is_empty dw 0
      seconds db 0  ;?¦¦ VARIABLE IN DATA SEGMENT.
      
+     moving_block_mode dw 0
+     moving_block_color db 0
+     moving_block1_x dw 0
+     moving_block1_y dw 0
+     moving_block2_x dw 0
+     moving_block2_y dw 0
+     moving_block3_x dw 0
+     moving_block3_y dw 0
+     moving_block4_x dw 0
+     moving_block4_y dw 0   
+     
+     rand_num_in dw 0
+     rand_num_out dw 0  
+     
 .code 
 
 
@@ -50,28 +66,22 @@ main proc far
     call clear_screen    
     call set_graphic_mode 
     call create_background
-    mov bx, 0    
+   
+      
+    call gen_new_block
     
-    mov cell_x, 0
-    mov cell_y, 4
-    mov cell_color, 1  
-    call color_cell  
     
-    mov cell_x, 5
-    mov cell_y, 4
-    mov cell_color, 3  
-    call color_cell
-
-    mov cell_y_down, 4 
-
-for_temp:  
+    mov bx, 0 
+for_temp:
     call delay 
-    call move_down_cell   
+    call check_key_pressed 
+    call delay
+    call mov_down_block 
     inc bx   
-    mov cell_x_down, bx
-    cmp bx,20
+    cmp bx,11
     jnz for_temp
 
+    
     mov ax, 4c00h ; exit to operating system.
     int 21h    
 
@@ -269,25 +279,44 @@ find_cell_center proc
     ret
 endp find_cell_center 
 
+;;;;;;;move right cell;;;;;;;;;;
+move_right_cell proc ;todo
+    push ax 
+    push bx
+    push cx
+    push dx
+    
+
+    mov ax, cell_x_right
+    mov cell_x, ax  
+    mov cell_x_color_get, ax 
+    mov ax, cell_y_right
+    mov cell_y, ax
+    mov cell_y_color_get, ax 
+    
+    call get_color_of_cell
+    mov al, cell_color_get   
+    push ax
+    mov cell_color,0
+    call color_cell   
+    inc cell_y
+    pop ax  
+    mov cell_color,al 
+    call color_cell
+       
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp move_right_cell
 ;;;;;;;;;;;;;;;;;
 move_down_cell proc ;todo
     push ax 
     push bx
     push cx
     push dx
-    
-    
-    mov ax, cell_x_down  
-    mov check_cell_x, ax
-    inc check_cell_x  
-    
-    mov ax, cell_y_down  
-    mov check_cell_y, ax
-    
-    call check_cell_empty
-    cmp  check_is_empty, 0
-    je   done       
-    
+
     mov ax, cell_x_down
     mov cell_x, ax  
     mov cell_x_color_get, ax 
@@ -304,7 +333,7 @@ move_down_cell proc ;todo
     pop ax  
     mov cell_color,al 
     call color_cell
-done:       
+       
     pop dx
     pop cx
     pop bx
@@ -368,5 +397,275 @@ else_check_cell:
     pop ax
     ret
 endp check_cell_empty 
-;;;;;;;;;;;;;;;;;
+;;;;;;;check_key_pressed;;;;;;;;;;   ;TODO
+check_key_pressed proc 
+    push ax 
+    push bx
+    push cx
+    push dx
+    
+    mov ah, 01h
+    int 16h
+    jz  done_key_pressed 
+    
+    cmp al, 's'
+    jne next1_key_pressed
+    call mov_down_block  
+    mov ah, 0ch   ;clear keyboard buffer
+    int 21h
+next1_key_pressed:
+    cmp al, 'd'
+    jne next2_key_pressed
+    call mov_right_block
+    mov ah, 0ch   ;clear keyboard buffer
+    int 21h
+next2_key_pressed:  
+    cmp al, 'a'
+    jne next3_key_pressed
+    ;call mov_left_block
+    mov ah, 0ch   ;clear keyboard buffer
+    int 21h
+next3_key_pressed:
+done_key_pressed:
+ 
+ 
+    
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp check_key_pressed    
+;;;;;;;mov right current block;;;;;;;;;;   ;TODO
+mov_right_block proc
+    push ax 
+    push bx
+    push cx
+    push dx
+    
+    mov ax, moving_block1_x
+    mov cell_x_right, ax 
+      
+    mov ax, moving_block1_y
+    mov cell_y_right, ax
+    
+    call move_right_cell 
+    
+    inc moving_block1_y 
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp mov_right_block   
+
+;;;;;;;mov down current block;;;;;;;;;;   ;TODO
+mov_down_block proc
+    push ax 
+    push bx
+    push cx
+    push dx
+    
+    mov ax, moving_block_mode
+    cmp ax, 0
+    jne mov_down_next1 
+    call mov_down_block0 
+ 
+mov_down_next1: 
+mov_down_done:
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp mov_down_block  
+;;;;;;;mov down current block0;;;;;;;;;;   ;TODO
+mov_down_block0 proc
+    push ax 
+    push bx
+    push cx
+    push dx
+    
+    
+    mov ax, moving_block1_x 
+    mov bx, moving_block1_y
+    inc ax
+    mov check_cell_x,ax
+    mov check_cell_y,bx
+    call check_cell_empty
+    cmp check_is_empty, 0
+    je  mov_down_done0  
+    
+    mov ax, moving_block2_x 
+    mov bx, moving_block2_y
+    inc ax
+    mov check_cell_x,ax
+    mov check_cell_y,bx
+    call check_cell_empty
+    cmp check_is_empty, 0
+    je  mov_down_done0
+    
+    mov ax, moving_block3_x 
+    mov bx, moving_block3_y
+    inc ax
+    mov check_cell_x,ax
+    mov check_cell_y,bx
+    call check_cell_empty
+    cmp check_is_empty, 0
+    je  mov_down_done0 
+    
+    
+    mov ax, moving_block4_x 
+    mov bx, moving_block4_y
+    inc ax
+    mov check_cell_x,ax
+    mov check_cell_y,bx
+    call check_cell_empty
+    cmp check_is_empty, 0
+    je  mov_down_done 
+         
+    call mov_down_common
+    
+mov_down_done0:
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp mov_down_block0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+mov_down_common proc
+    push ax 
+    push bx
+    push cx
+    push dx
+    mov ax, moving_block1_x 
+    mov cell_x_down, ax   
+    mov ax, moving_block1_y
+    mov cell_y_down, ax
+    call move_down_cell 
+    inc moving_block1_x
+    
+    mov ax, moving_block2_x 
+    mov cell_x_down, ax   
+    mov ax, moving_block2_y
+    mov cell_y_down, ax
+    call move_down_cell 
+    inc moving_block2_x
+    
+    mov ax, moving_block3_x 
+    mov cell_x_down, ax   
+    mov ax, moving_block3_y
+    mov cell_y_down, ax
+    call move_down_cell 
+    inc moving_block3_x
+    
+    mov ax, moving_block4_x 
+    mov cell_x_down, ax   
+    mov ax, moving_block4_y
+    mov cell_y_down, ax
+    call move_down_cell  
+    inc moving_block4_x 
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp mov_down_common
+;;;;;;;;;;;;;;generate a rand no using the system time;;;;;;;;;;;;;;;;;;;;;;; 
+rand_gen proc       
+    push ax 
+    push bx
+    push cx
+    push dx 
+    
+    MOV AH, 00h  ; interrupts to get system time        
+    INT 1AH      ; CX:DX now hold number of clock ticks since midnight      
+    
+    mov  ax, dx
+    xor  dx, dx
+    mov  cx, rand_num_in    
+    div  cx       ; here dx contains the remainder of the division - from 0 to 9
+    
+    mov rand_num_out, dx
+    
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    RET
+endp rand_gen
+;;;;;;;;;;;;generate a new block;;;;;;;;;;;;;;;;; 
+gen_new_block proc          
+    push ax 
+    push bx
+    push cx
+    push dx 
+    
+    mov rand_num_in, 5
+    call rand_gen
+    mov ax, rand_num_out
+    
+    mov rand_num_in, 5
+    call rand_gen
+    mov bx, rand_num_out  
+    
+    mov moving_block1_y, 0
+    
+    ;cmp ax,0
+    ;jnz next1_new_block 
+    call new_block1_conf
+
+    
+    
+next1_new_block:    
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    RET
+endp gen_new_block   
+;;;;;;;;;;;;generate a new block;;;;;;;;;;;;;;;;; 
+new_block1_conf proc         
+    push ax 
+    push bx
+    push cx
+    push dx                  
+    
+    mov moving_block_color, 0
+    mov moving_block_color, 11
+    mov cell_color, 11 
+    mov ax, rand_num_out 
+    
+    mov moving_block1_x, 0  
+    mov moving_block1_y, ax  
+    mov cell_x, 0
+    mov cell_y, ax
+    call color_cell 
+    inc ax 
+    mov moving_block2_x, 0  
+    mov moving_block2_y, ax  
+    mov cell_x, 0
+    mov cell_y, ax
+    call color_cell 
+    inc ax  
+    mov moving_block3_x, 0  
+    mov moving_block3_y, ax  
+    mov cell_x, 0
+    mov cell_y, ax
+    call color_cell 
+    inc ax 
+    mov moving_block4_x, 0  
+    mov moving_block4_y, ax  
+    mov cell_x, 0
+    mov cell_y, ax
+    call color_cell     
+    
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    RET
+endp new_block1_conf
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 end main

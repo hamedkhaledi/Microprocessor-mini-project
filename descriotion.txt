@@ -1,4 +1,4 @@
-توابع :
+﻿توابع :
 clear_screen 
 	description: صفحه را پاک می‌کند
 	input : 
@@ -62,12 +62,18 @@ find_cell_center
 		cell_y_pos
 ------------------------------------	
 move_down_cell 
-	description: یک کاشی را به سمت پایین می‌فرستد اگر این عملیات موفق نبود ۰ بر می‌گرداند
+	description: یک کاشی را به سمت پایین می‌فرستد 
 	input : 
 		cell_x_down
 		cell_y_down
 	output:
-		is_down_empty
+------------------------------------
+move_right_cell 
+	description: یک کاشی را به سمت راست می‌فرستد 
+	input : 
+		cell_x_right
+		cell_y_right
+	output:
 ------------------------------------	
 get_color_of_cell 
 	description: رنگ یک کاشی را باز‌میگرداند
@@ -84,3 +90,18 @@ check_cell_empty
 		check_cell_y
 	output:
 		check_is_empty
+------------------------------------	
+check_key_pressed 
+	description: چک میکند آیا کلیدی فشرده شده است و حرکت مناسب را انجام می‌دهد
+	input : 
+	output:
+------------------------------------	
+rand_gen 
+	description: یک عدد رندوم تولید می‌کند
+	input : rand_num_in
+	output: rand_num_out
+------------------------------------	
+gen_new_block 
+	description: یک بلاک جدید تولید می‌کند
+	input : 
+	output: 
