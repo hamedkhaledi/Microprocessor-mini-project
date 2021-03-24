@@ -101,7 +101,17 @@ rand_gen
 	input : rand_num_in
 	output: rand_num_out
 ------------------------------------	
-gen_new_block 
-	description: یک بلاک جدید تولید می‌کند
+mov_down_block 
+	description: بلاک فعلی را به پایین می‌فرستد
+	input : 
+	output: check_block_down 
+------------------------------------	
+is_down_block_empty 
+	description: چک می‌کند آیا می‌توان بلاک را به پایین فرستاد
+	input : 
+	output: check_block_down 
+------------------------------------	
+mov_down_block_common 
+	description: بدون چک کردن بلاک فعلی را به پایین می‌فرستد
 	input : 
 	output: 
