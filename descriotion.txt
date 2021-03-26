@@ -19,6 +19,7 @@ draw_vertical_line
 		start_row_line 
 		start_col_line
 		finish_row_line
+		line_color
 	output:
 ------------------------------------	
 draw_horizontal_line 
@@ -27,6 +28,7 @@ draw_horizontal_line
 		start_row_line 
 		start_col_line
 		finish_col_line
+		line_color
 	output:
 ------------------------------------	
 color_cell 
@@ -37,6 +39,14 @@ color_cell
 		cell_color
 	output:
 ------------------------------------	
+color_border_cell 
+	description: دور یک خانه بازی را رنگ می‌کند
+	input : 
+		cell_x 
+		cell_y
+		line_color
+	output:
+------------------------------------		
 draw_solid_rectangle 
 	description: یک مستطیل تو پر می‌کشد
 	input : 
@@ -113,5 +123,25 @@ is_down_block_empty
 ------------------------------------	
 mov_down_block_common 
 	description: بدون چک کردن بلاک فعلی را به پایین می‌فرستد
+	input : 
+	output: 
+------------------------------------	
+check_game_done 
+	description: اگر خانه مد نظر خالی نباشد بازی تمام‌  می‌شود
+	input : 
+	output: 
+------------------------------------	
+mov_to_end
+	description: تا بلاک اخر پایین میرود
+	input : 
+	output: 
+------------------------------------	
+show_hint
+	description: برای نشان دادن راهنمایی بلاک حرکت کننده
+	input : 
+	output: 
+------------------------------------	
+clear_predict_area
+	description: منطقه نشان دادن را سفید می‌کند
 	input : 
 	output: 
