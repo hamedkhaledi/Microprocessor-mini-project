@@ -1,2 +1,2 @@
-# Microprocessor mini project
+# Tetris 8086
  Microprocessor mini project - spring 1400
